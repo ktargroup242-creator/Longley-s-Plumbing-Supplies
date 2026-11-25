@@ -1,0 +1,57 @@
+LONGLEYS POS - PHONE / TABLET VERSION
+=====================================
+
+This is the same POS (same items, VAT, quotes, layaway, accounting) laid out for touch screens:
+a bottom tab bar, a slide-out menu, and a "View sale" bar that opens the current sale.
+Works on iPhone, iPad, Android phones and tablets.
+
+IMPORTANT - READ THIS
+---------------------
+* The phone/tablet keeps its OWN data, saved inside the app on that device. It does NOT sync
+  live with the Windows PC. Sales rung up on the phone do not appear on the PC, and the reverse.
+* To start the phone with the PC's items/prices/customers:
+    On the PC:    Settings > Export backup   (saves a .json file)
+    Send it to the phone (email, WhatsApp, AirDrop, Drive).
+    On the phone: Menu > Settings > Import backup > pick that file.
+* Back up often: Menu > "Back up now (save file)". Keep the file somewhere safe (Drive, email).
+* Not available on phones: the cash drawer and the PC backup helper. Receipts print through the
+  phone's normal Print dialog (AirPrint / Android print service), not USB thermal printers.
+
+STEP 1 - PUT THE FOLDER ON THE INTERNET (one time, free, takes 2 minutes)
+------------------------------------------------------------------------
+The app must be opened from a web address (https) so phones can install it and use it offline.
+Easiest way:
+  1. Go to  app.netlify.com/drop  (free account).
+  2. Drag this whole "Longleys-POS-Mobile" folder onto the page.
+  3. Netlify gives you an address like  https://something.netlify.app
+     (You can rename it in Site settings.)
+Other free options: GitHub Pages, Cloudflare Pages, Vercel. The folder is plain files, no server needed.
+The address is public, but nobody can see your sales: all data stays on your own device.
+Do not put customer/sales data in the folder itself.
+
+STEP 2 - INSTALL ON EACH DEVICE
+-------------------------------
+iPhone / iPad (use Safari):  open the address > Share button > "Add to Home Screen".
+Android (use Chrome):        open the address > menu (three dots) > "Install app" / "Add to Home screen"
+                             (or Menu in the POS > "Install app on this device").
+Open it from the new "Longleys POS" icon. After the first open it also works with no internet.
+Installing from the Home Screen matters on iPhone/iPad: Safari can clear data from sites that are
+only opened in a browser tab; an installed app is protected.
+
+FIRST LOGIN
+-----------
+Same as the PC version: Manager, PIN 1234 (change it right away). Fill in store details in Settings.
+
+TIPS
+----
+* Camera barcode scanning (the camera button beside the search box) works on Android Chrome.
+  On iPhone/iPad, use a Bluetooth barcode scanner (it types into the search box) or search by name.
+* Rotate a tablet sideways to see the item list and the sale side by side.
+* Updating the app later: upload the changed folder to the same Netlify site, then close and
+  reopen the app twice.
+
+FILES
+-----
+index.html, app.js, accounting.js, *-seed.js   the POS itself (same code as the PC version)
+mobile.css, mobile.js, mobile-shim.js          the phone/tablet layer
+manifest.webmanifest, sw.js, icon*.png         install + offline support

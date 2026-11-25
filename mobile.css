@@ -1,0 +1,152 @@
+/* Longleys POS - phone & tablet layer. Loaded after styles.css. */
+:root { --tabbar-h: 58px; --cartbar-h: 56px; }
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+
+/* Touch-friendly sizes on any touch device */
+@media (pointer: coarse) {
+  button, .nav-btn, .pill, .disc-chip { min-height: 40px; }
+  input, select { min-height: 42px; font-size: 16px; } /* 16px stops iOS zooming into fields */
+  .qty-ctrl button { width: 36px; height: 36px; font-size: 18px; }
+  .qty-input { width: 56px; text-align: center; }
+  .link-btn { padding: 6px 4px; }
+  .product-card { min-height: 84px; }
+}
+
+.menu-btn, .tabbar, .cartbar, .sheet-close, .scan-btn, .backdrop { display: none; }
+
+/* ---------- Tablet & phone: sidebar becomes a slide-out menu ---------- */
+@media (max-width: 1100px) {
+  #app { display: block; min-height: 100dvh; }
+  .sidebar {
+    position: fixed; z-index: 60; top: 0; bottom: 0; left: 0; width: min(300px, 84vw);
+    flex-direction: column; flex-wrap: nowrap; gap: 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+    transform: translateX(-102%); transition: transform .22s ease; box-shadow: none;
+  }
+  body.menu-open .sidebar { transform: none; box-shadow: 8px 0 30px rgba(0,0,0,.35); }
+  .nav { flex-direction: column; flex-wrap: nowrap; }
+  .nav-btn { padding: 12px 14px; font-size: 16px; }
+  .sidebar-foot { margin-top: auto; width: auto; display: block; padding-top: 12px; }
+  #drawerBtn, #folderBtn, #folder2Btn { display: none; }
+  .backdrop { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(15,18,22,.5); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  body.menu-open .backdrop { opacity: 1; pointer-events: auto; }
+  body.menu-open { overflow: hidden; }
+
+  .topbar { position: sticky; top: 0; z-index: 20; background: var(--bg); gap: 10px;
+    padding: calc(env(safe-area-inset-top, 0px) + 10px) 14px 8px; }
+  .topbar > div:first-of-type { flex: 1; min-width: 0; }
+  .topbar h1 { font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-btn { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border: 1px solid var(--line);
+    background: #fff; border-radius: 10px; font-size: 22px; line-height: 1; padding: 0; }
+  .view { padding: 8px 14px 24px; }
+  .panel { padding: 12px; }
+  .toolbar { flex-wrap: wrap; }
+  .toolbar input { min-width: 140px; }
+  .form-grid { grid-template-columns: 1fr 1fr; }
+  .table-wrap { max-height: none; min-height: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap thead th { position: static; }
+
+  /* Ticket rows become cards (the 6-column table does not fit) */
+  .ticket-head { flex-wrap: wrap; }
+  .ticket-head > div:first-child { flex: 1 1 100%; }
+  #customerPickBtn { white-space: nowrap; text-align: left; font-size: 15px; }
+  .ticket-table thead { display: none; }
+  .ticket-table, .ticket-table tbody { display: block; width: 100%; }
+  .ticket-table tr { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name del" "qty amt" "price price"; gap: 6px 10px;
+    padding: 10px 2px; border-bottom: 1px solid var(--line); align-items: center; }
+  .ticket-table td { display: block; border: 0; padding: 0; }
+  .ticket-table td:nth-child(1) { grid-area: name; }
+  .ticket-table td:nth-child(2) { grid-area: qty; }
+  .ticket-table td:nth-child(3) { grid-area: price; font-size: 13px; color: var(--muted); }
+  .ticket-table td:nth-child(3)::before { content: "Price: "; }
+  .ticket-table td:nth-child(4) { display: none; } /* VAT */
+  .ticket-table td:nth-child(5) { grid-area: amt; font-weight: 700; font-size: 16px; text-align: right; }
+  .ticket-table td:nth-child(6) { grid-area: del; text-align: right; }
+}
+
+/* ---------- Tablet (portrait 768-899 handled as phone; landscape-ish 900-1100 keeps two columns) ---------- */
+@media (min-width: 900px) and (max-width: 1100px) {
+  .register-grid { grid-template-columns: 1.2fr 1fr; }
+  .product-grid { max-height: calc(100dvh - 250px); }
+  .ticket-panel { position: sticky; top: 84px; }
+  .ticket-panel .table-wrap { max-height: calc(100dvh - 430px); min-height: 120px; overflow-y: auto; }
+}
+
+/* ---------- Phone & portrait tablet ---------- */
+@media (max-width: 899px) {
+  .topbar-meta { display: none; }
+  #viewSubtitle { display: none; }
+  .register-grid { display: block; }
+  .product-grid { max-height: none; overflow: visible; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .pills { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .pill { white-space: nowrap; flex: none; }
+  .catalog-panel .toolbar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 62px); z-index: 10; background: var(--panel); padding-bottom: 8px; margin-bottom: 4px; }
+  #categoryFilter { flex: 1 1 100%; max-width: none; }
+  #app { padding-bottom: calc(var(--tabbar-h) + var(--cartbar-h) + env(safe-area-inset-bottom, 0px) + 12px); }
+
+  /* Bottom tab bar */
+  .tabbar { display: flex; position: fixed; z-index: 40; left: 0; right: 0; bottom: 0;
+    background: #fff; border-top: 1px solid var(--line);
+    padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .tabbar button { flex: 1; min-height: var(--tabbar-h); border: 0; background: transparent; color: var(--muted);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; padding: 4px 0; }
+  .tabbar button .ico { font-size: 20px; line-height: 1; }
+  .tabbar button.active { color: var(--qb-green-dark); font-weight: 700; }
+
+  /* Sale bar + slide-up sale sheet */
+  .cartbar { display: none; position: fixed; z-index: 41; left: 10px; right: 10px;
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 8px); height: var(--cartbar-h);
+    background: var(--qb-green); color: #fff; border: 0; border-radius: 14px; padding: 0 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.28); align-items: center; justify-content: space-between; font-size: 16px; font-weight: 700; }
+  body.on-register .cartbar { display: flex; }
+  .cartbar.bump { animation: bump .25s ease; }
+  @keyframes bump { 50% { transform: scale(1.04); } }
+  .ticket-panel {
+    position: fixed; z-index: 70; left: 0; right: 0; bottom: 0; top: 8vh; margin: 0;
+    border-radius: 18px 18px 0 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 14px 14px calc(env(safe-area-inset-bottom, 0px) + 14px);
+    transform: translateY(105%); transition: transform .25s ease; box-shadow: 0 -10px 40px rgba(0,0,0,.3);
+  }
+  body.cart-open .ticket-panel { transform: none; }
+  body.cart-open { overflow: hidden; }
+  body.cart-open .backdrop { opacity: 1; pointer-events: auto; z-index: 65; }
+  .sheet-close { display: grid; place-items: center; position: absolute; right: 10px; top: 8px; width: 38px; height: 38px;
+    border: 0; background: #eef1f4; border-radius: 50%; font-size: 18px; padding: 0; }
+  .ticket-head { padding-right: 44px; flex-wrap: wrap; }
+  .ticket-actions { flex-wrap: wrap; }
+  .pay-row { position: sticky; bottom: calc(-1 * env(safe-area-inset-bottom, 0px) - 14px); background: var(--panel); padding: 10px 0 2px; }
+  .pay-row input { width: 110px; }
+  .pay-btn { padding: 15px; font-size: 18px; }
+
+  /* Scan button next to search */
+  .scan-btn { display: none; min-width: 46px; font-size: 20px; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 0 10px; }
+  .scan-btn.on { display: block; }
+
+  .form-grid { grid-template-columns: 1fr; }
+  .tender-grid { grid-template-columns: 1fr 1fr; }
+  .audit-row { grid-template-columns: 1fr; gap: 2px; }
+  .report-grid { grid-template-columns: 1fr 1fr; }
+  .backup-row button, .backup-row .file-btn { flex: 1 1 140px; text-align: center; }
+
+  /* Dialogs: bottom sheets */
+  .modal { place-items: end center; padding: 0; }
+  .modal-card { width: 100%; max-height: 92dvh; border-radius: 18px 18px 0 0;
+    padding: 18px 16px calc(env(safe-area-inset-bottom, 0px) + 16px); }
+  #login { place-items: center; padding: 16px; }
+  #login .modal-card { border-radius: 14px; max-height: 92dvh; }
+}
+
+/* Scanner overlay */
+.scan-overlay { position: fixed; inset: 0; z-index: 200; background: #000; display: flex; flex-direction: column; }
+.scan-overlay video { flex: 1; width: 100%; object-fit: cover; min-height: 0; }
+.scan-overlay .scan-bar { color: #fff; padding: 14px 16px calc(env(safe-area-inset-bottom, 0px) + 14px); display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #111; }
+.scan-overlay .scan-aim { position: absolute; left: 12%; right: 12%; top: 32%; height: 22%; border: 3px solid rgba(44,160,28,.9); border-radius: 12px; pointer-events: none; }
+
+/* Small toast */
+.toast { position: fixed; z-index: 300; left: 50%; transform: translateX(-50%); bottom: calc(var(--tabbar-h) + var(--cartbar-h) + 28px + env(safe-area-inset-bottom, 0px));
+  background: #222; color: #fff; padding: 9px 16px; border-radius: 999px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 90vw; }
+.toast.show { opacity: .95; }
+
+/* Receipts/quotes still print the same way (AirPrint / Android print) */
+@media print { .tabbar, .cartbar, .backdrop, .menu-btn, .toast, .scan-overlay { display: none !important; } }

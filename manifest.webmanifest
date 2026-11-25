@@ -1,0 +1,16 @@
+{
+  "name": "Longleys Plumbing POS",
+  "short_name": "Longleys POS",
+  "description": "Point of sale for Longleys Plumbing",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#393a3d",
+  "theme_color": "#393a3d",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

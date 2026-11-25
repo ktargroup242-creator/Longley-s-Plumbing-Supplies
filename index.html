@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#393a3d" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Longleys POS" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; media-src blob:; base-uri 'none'; form-action 'none'" />
+  <style id="pageStyle"></style>
+  <title>Longleys Plumbing — Point of Sale</title>
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">LP</div>
+        <div>
+          <strong>Longleys Plumbing</strong>
+          <span>Point of Sale</span>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-view="register">Register</button>
+        <button class="nav-btn" data-view="inventory" data-role="manager">Inventory</button>
+        <button class="nav-btn" data-view="stock" data-role="manager">Stock</button>
+        <button class="nav-btn" data-view="sales">Sales History</button>
+        <button class="nav-btn" data-view="customers">Customers</button>
+        <button class="nav-btn" data-view="quotes">Quotes</button>
+        <button class="nav-btn" data-view="layaway">Layaway</button>
+        <button class="nav-btn" data-view="drawer">Drawer</button>
+        <button class="nav-btn" data-view="reports" data-role="manager">Reports</button>
+        <button class="nav-btn" data-view="accounting" data-role="manager">Accounting</button>
+        <button class="nav-btn" data-view="labels" data-role="manager">Labels</button>
+        <button class="nav-btn" data-view="settings" data-role="manager">Settings</button>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="cashier-chip">
+          <span>Cashier</span>
+          <strong id="cashierName">Front Counter</strong>
+        </div>
+        <button id="logoutBtn" type="button" class="ghost logout hidden">Sign out</button>
+        <p class="vat-note">Bahamas VAT 10%</p>
+        <p id="backupNote" class="vat-note"></p>
+        <button id="drawerBtn" type="button" class="link-btn folder-note"></button>
+        <button id="folderBtn" type="button" class="link-btn folder-note"></button>
+        <button id="folder2Btn" type="button" class="link-btn folder-note"></button>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <h1 id="viewTitle">Sales Register</h1>
+          <p id="viewSubtitle">Ring up hardware, plumbing, electrical, and lumber</p>
+        </div>
+        <div class="topbar-meta">
+          <div>
+            <span>Ticket</span>
+            <strong id="ticketNo">—</strong>
+          </div>
+          <div>
+            <span>Date</span>
+            <strong id="clock">—</strong>
+          </div>
+        </div>
+      </header>
+
+      <section id="view-register" class="view active">
+        <div class="register-grid">
+          <div class="panel catalog-panel">
+            <div class="toolbar">
+              <input id="skuSearch" type="text" placeholder="Scan or search SKU, barcode, or item name" autocomplete="off" />
+              <select id="categoryFilter"></select>
+            </div>
+            <div id="categoryPills" class="pills"></div>
+            <div id="productGrid" class="product-grid"></div>
+          </div>
+
+          <div class="panel ticket-panel">
+            <div class="ticket-head">
+              <div>
+                <h2>Current Sale</h2>
+                <button id="customerPickBtn" class="link-btn" type="button">Walk-in customer</button>
+              </div>
+              <div class="ticket-actions">
+                <button id="holdBtn" type="button">Hold</button>
+                <button id="recallBtn" type="button">Recall</button>
+                <button id="quoteBtn" type="button">Quote</button>
+                <button id="layawayBtn" type="button">Layaway</button>
+                <button id="clearBtn" type="button" class="danger">Clear</button>
+              </div>
+            </div>
+            <div class="customer-bin-row">
+              <label for="customerBin">Bahamas Identification Number (BIN)</label>
+              <input id="customerBin" type="text" inputmode="numeric" maxlength="10" placeholder="10-digit BIN" />
+            </div>
+            <div class="table-wrap">
+              <table class="ticket-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>VAT</th>
+                    <th>Amount</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="cartBody"></tbody>
+              </table>
+            </div>
+            <div id="emptyCart" class="empty-cart">No items on this ticket. Search or tap a product to begin.</div>
+            <div class="totals">
+              <div><span>Subtotal (ex VAT)</span><strong id="subtotalEl">$0.00</strong></div>
+              <div><span>Bahamas VAT (10%)</span><strong id="vatEl">$0.00</strong></div>
+              <div><span>Discount</span><strong id="discountEl">$0.00</strong></div>
+              <div class="grand"><span>Amount Due</span><strong id="totalEl">$0.00</strong></div>
+            </div>
+            <div class="disc-row"><span class="disc-label">Discount</span><span id="discountChips" class="disc-chips"></span></div>
+            <div class="pay-row">
+              <select id="discountMode" title="Enter the discount as dollars or percent"><option value="$">$</option><option value="%">%</option></select>
+              <input id="discountInput" type="number" min="0" step="0.01" placeholder="Discount $" />
+              <button id="payBtn" class="pay-btn" type="button">Charge</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-inventory" class="view">
+        <div class="panel">
+          <div class="toolbar">
+            <input id="invSearch" type="text" placeholder="Search inventory" />
+            <button id="addProductBtn" type="button" class="primary">New Item</button>
+            <button id="measureToolBtn" type="button" class="ghost" data-role="manager">Sell by length / weight</button>
+            <button id="loadSeedBtn" type="button" class="ghost" data-role="manager">Load QuickBooks item list</button>
+            <button id="stCleanBtn" type="button" class="ghost" data-role="manager">Clean up ST- duplicates</button>
+            <button id="resetItemsBtn" type="button" class="ghost danger" data-role="manager">Replace all with QuickBooks list</button>
+            <label class="ghost file-btn">Import CSV<input id="importItemsInput" type="file" accept=".csv,text/csv" hidden></label>
+          </div>
+          <p id="invCount" class="hint"></p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Barcode</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>On Hand</th>
+                  <th>Cost</th>
+                  <th>Price</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="inventoryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-sales" class="view">
+        <div class="panel">
+          <div class="toolbar">
+            <input id="salesSearch" type="text" placeholder="Search receipt no., customer or held name, BIN, item or cashier" />
+            <select id="salesPreset" style="flex:0 0 auto"><option value="all">All dates</option><option value="today">Today</option><option value="yesterday">Yesterday</option><option value="week">This week</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="month">This month</option><option value="lastmonth">Last month</option><option value="year">This year</option><option value="custom">Custom</option></select>
+            <input id="salesFrom" type="date" style="flex:0 0 auto" title="From" /><input id="salesTo" type="date" style="flex:0 0 auto" title="To" />
+          </div>
+          <div id="salesSummary" class="hint" style="margin:-4px 0 10px"></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Receipt</th>
+                  <th>Date</th>
+                  <th>Customer / BIN</th>
+                  <th>Items</th>
+                  <th>VAT</th>
+                  <th>Total</th>
+                  <th>Tender</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="salesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-customers" class="view">
+        <div class="panel">
+          <div class="toolbar">
+            <input id="custSearch" type="text" placeholder="Search customers" />
+            <button id="addCustomerBtn" type="button" class="primary">New Customer</button>
+            <label class="ghost file-btn" data-role="manager">Import CSV<input id="importCustInput" type="file" accept=".csv,text/csv" hidden></label>
+            <button id="exportCustBtn" type="button" class="ghost" data-role="manager">Export CSV</button>
+            <button id="loadCustSeedBtn" type="button" class="ghost" data-role="manager">Load QuickBooks customers</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>BIN</th>
+                  <th>Notes</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="customersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-settings" class="view">
+        <div class="panel settings-panel">
+          <h2>Store &amp; Register</h2>
+          <div class="form-grid">
+            <label>Store name<input id="setStoreName" type="text" /></label>
+            <label>Legal name<input id="setLegalName" type="text" /></label>
+            <label>Address line 1<input id="setAddr1" type="text" /></label>
+            <label>Address line 2<input id="setAddr2" type="text" /></label>
+            <label>Phone<input id="setPhone" type="text" /></label>
+            <label>Email<input id="setEmail" type="text" /></label>
+            <label>VAT registration no.<input id="setVatNo" type="text" /></label>
+            <label>VAT rate (%)<input id="setVat" type="number" min="0" step="0.01" readonly /></label>
+            <label>Receipt footer<input id="setFooter" type="text" /></label>
+            <label>Register ID<input id="setRegisterId" type="text" /></label>
+          </div>
+          <p class="hint">Bahamas VAT is locked at 10% for this register. Receipts print at 3 inches (76 mm thermal).</p>
+          <button id="saveSettingsBtn" class="primary" type="button">Save Settings</button>
+
+          <h2>Cash drawer</h2>
+          <p class="hint">Sends the open signal to the receipt printer from this browser (Chrome or Edge). Connect once; the browser remembers it. If your printer is already set to open the drawer when it prints, you do not need this, but this also opens it for cash sales with no receipt.</p>
+          <p id="drawerStatus" class="hint"></p>
+          <div class="toolbar">
+            <button id="drawerHelperBtn" type="button" class="ghost">Use drawer helper (recommended)</button>
+            <button id="drawerDriverBtn" type="button" class="ghost">Use printer driver (prints a slip)</button>
+            <button id="drawerUsbBtn" type="button" class="ghost">Connect USB printer</button>
+            <button id="drawerSerialBtn" type="button" class="ghost">Connect serial / COM port</button>
+            <button id="drawerTestBtn" type="button" class="ghost">Test open</button>
+            <button id="drawerClearBtn" type="button" class="ghost danger">Disconnect</button>
+          </div>
+          <label class="inline"><input id="drawerOnCash" type="checkbox"> Open the drawer automatically on cash sales</label>
+
+          <h2>Staff</h2>
+          <p class="hint">Managers see everything. Cashiers can only use the register, sales history, and customers. PINs are a counter-level lock, not strong security.</p>
+          <div id="usersList"></div>
+          <button id="addUserBtn" class="ghost" type="button">Add staff</button>
+          <button id="recoveryBtn" class="ghost" type="button">Create / replace recovery code</button>
+          <p id="recoveryStatus" class="hint"></p>
+
+          <h2>Data folder (files on this PC)</h2>
+          <p class="hint">Pick a folder on this computer, such as C:\POS-Data. Every change is saved to a file there, plus a dated backup copy each day. Works in Chrome and Edge. Use a folder that is also synced to OneDrive or Google Drive, or copy it to a USB stick, for an off-computer copy.</p>
+          <p id="folderStatusText" class="hint"></p>
+          <div class="backup-row">
+            <button id="chooseFolderBtn" class="primary" type="button">Choose data folder</button>
+            <button id="saveNowBtn" class="ghost" type="button">Save now</button>
+            <button id="disconnectFolderBtn" class="ghost" type="button">Disconnect</button>
+          </div>
+
+          <h2>Second backup folder (required)</h2>
+          <p class="hint">A second copy of every save goes to a different place, such as a USB stick, another drive, or a OneDrive/Google Drive folder. The POS asks for it each time it starts. It must not be the same folder as the data folder, or inside it.</p>
+          <p id="folder2StatusText" class="hint"></p>
+          <div class="backup-row">
+            <button id="chooseFolder2Btn" class="primary" type="button">Choose backup folder</button>
+          </div>
+
+          <h2>Backup</h2>
+          <p class="hint">Data lives in this browser only. Export a backup regularly and keep a copy off this computer.</p>
+          <div class="backup-row">
+            <button id="exportBackupBtn" class="primary" type="button">Export backup (JSON)</button>
+            <label class="ghost file-btn">Import backup<input id="importBackupInput" type="file" accept="application/json" hidden></label>
+            <button id="exportSalesBtn" class="ghost" type="button">Sales CSV</button>
+            <button id="exportItemsBtn" class="ghost" type="button">Inventory CSV</button>
+          </div>
+
+          <h2>Activity log</h2>
+          <div id="auditList" class="audit-list"></div>
+        </div>
+      </section>
+
+      <section id="view-layaway" class="view">
+        <div class="panel">
+          <div class="toolbar">
+            <input id="layaSearch" type="text" placeholder="Search by number, name or phone" />
+            <select id="layaFilter"><option value="active">Active (open and overdue)</option><option value="all">All</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+          </div>
+          <div class="toolbar" id="layaPolicy"></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>No</th><th>Customer</th><th>Total</th><th>Paid</th><th>Balance</th><th>Collect by</th><th>Status</th><th></th></tr></thead>
+              <tbody id="layawayBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-stock" class="view">
+        <div class="panel">
+          <div class="toolbar">
+            <button type="button" class="ghost active" data-stab="count">Count</button>
+            <button type="button" class="ghost" data-stab="receive">Receive delivery</button>
+            <button type="button" class="ghost" data-stab="low">Low stock</button>
+          </div>
+          <div id="stab-count"></div>
+          <div id="stab-receive" class="hidden"></div>
+          <div id="stab-low" class="hidden"></div>
+        </div>
+      </section>
+
+      <section id="view-drawer" class="view">
+        <div class="panel" id="drawerPanel"></div>
+      </section>
+
+      <section id="view-quotes" class="view">
+        <div class="panel">
+          <div class="toolbar">
+            <input id="quoteSearch" type="text" placeholder="Search quotes by number, name or phone" />
+            <select id="quoteFilter"><option value="all">All</option><option value="open">Open</option><option value="expired">Expired</option><option value="converted">Sold</option><option value="declined">Declined</option></select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Quote</th><th>Date</th><th>For</th><th>Total</th><th>Valid until</th><th>Status</th><th></th></tr></thead>
+              <tbody id="quotesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-labels" class="view">
+        <div class="panel">
+          <div class="toolbar">
+            <input id="labelSearch" type="text" placeholder="Search items" />
+            <select id="labelLayout"><option value="roll">Roll printer (3 in wide)</option><option value="sheet">Sheet, Letter, 3 across</option></select>
+            <label class="inline"><input id="labelVat" type="checkbox" checked /> Show price incl. VAT</label>
+          </div>
+          <div class="toolbar">
+            <button id="labelAllBtn" class="ghost" type="button">Select all with barcodes</button>
+            <button id="labelStockBtn" class="ghost" type="button">Copies = on hand</button>
+            <button id="labelClearBtn" class="ghost" type="button">Clear</button>
+            <button id="printLabelsBtn" class="primary" type="button">Print labels</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th></th><th>SKU</th><th>Name</th><th>Barcode</th><th>Price</th><th>Copies</th></tr></thead>
+              <tbody id="labelsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-accounting" class="view">
+        <div class="panel" id="acctRoot"></div>
+      </section>
+      <section id="view-reports" class="view">
+        <div class="panel">
+          <div class="toolbar" id="repTabs">
+            <button type="button" class="ghost active" data-rtab="eod">End of day</button>
+            <button type="button" class="ghost" data-rtab="sales">Sales</button>
+            <button type="button" class="ghost" data-rtab="dept">Departments</button>
+            <button type="button" class="ghost" data-rtab="items">Top items</button>
+            <button type="button" class="ghost" data-rtab="profit">Profit</button>
+            <button type="button" class="ghost" data-rtab="vat">VAT</button>
+            <button type="button" class="ghost" data-rtab="stockval">Stock value</button>
+          </div>
+          <div id="rep-eod">
+            <div class="toolbar">
+              <input id="reportDate" type="date" />
+              <button id="printReportBtn" class="primary" type="button">Print report</button>
+            </div>
+            <div id="reportOut"></div>
+          </div>
+          <div id="rep-range" class="hidden">
+            <div class="toolbar" id="repControls">
+              <select id="repPreset"><option value="month">This month</option><option value="today">Today</option><option value="yesterday">Yesterday</option><option value="week">This week</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="lastmonth">Last month</option><option value="year">This year</option><option value="custom">Custom</option></select>
+              <input id="repFrom" type="date" /><input id="repTo" type="date" />
+              <select id="repGroup"><option value="day">By day</option><option value="month">By month</option></select>
+              <select id="repSort"><option value="sales">By sales</option><option value="units">By units</option><option value="profit">By profit</option></select>
+              <button id="repCsv" class="ghost" type="button">CSV</button>
+              <button id="repPrint" class="ghost" type="button">Print</button>
+            </div>
+            <div id="repOut"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard"></div>
+  </div>
+
+  <div id="login" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="loginTitle">Sign in</h3>
+      <div class="stack-form" id="loginPanel">
+        <label>Staff<select id="loginUser"></select></label>
+        <label>PIN<input id="loginPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+        <div class="modal-actions"><button id="forgotBtn" class="link-btn" type="button">Forgot PIN?</button><button id="loginBtn" class="primary" type="button">Sign in</button></div>
+      </div>
+      <div class="stack-form hidden" id="recoverPanel">
+        <label>Manager<select id="recUser"></select></label>
+        <label>Recovery code<input id="recCode" type="text" autocomplete="off" placeholder="XXXX-XXXX-XXXX-XXXX"></label>
+        <label>New PIN (6 to 8 digits recommended)<input id="recPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></label>
+        <label>Repeat new PIN<input id="recPin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></label>
+        <div class="modal-actions"><button id="recBack" class="ghost" type="button">Back</button><button id="recGo" class="primary" type="button">Reset PIN</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="printRoot" class="print-root" aria-hidden="true"></div>
+
+  <script src="mobile-shim.js"></script>
+  <script src="inventory-seed.js"></script>
+  <script src="customers-seed.js"></script>
+  <script src="app.js"></script>
+  <script src="accounting.js"></script>
+  <script src="mobile.js"></script>
+</body>
+</html>
