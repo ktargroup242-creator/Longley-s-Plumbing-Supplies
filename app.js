@@ -119,8 +119,8 @@ const DEFAULT_PRODUCTS = [
 
 const ST_RE = /^st[-_ ]?(\d.*)$/i;
 const DEFAULT_SETTINGS = {
-  storeName: "Longleys Plumbing",
-  legalName: "Longleys Plumbing",
+  storeName: "Longley's Plumbing Supplies",
+  legalName: "Longley's Plumbing Supplies",
   addr1: "",
   addr2: "Nassau, Bahamas",
   phone: "",
@@ -128,7 +128,7 @@ const DEFAULT_SETTINGS = {
   vatNo: "",
   cashier: "Front Counter",
   vatPct: 10,
-  footer: "Thank you for shopping Longleys Plumbing",
+  footer: "Thank you for shopping Longley's Plumbing Supplies",
   registerId: "REG-01",
   drawerType: "",
   drawerOnCash: true
@@ -230,6 +230,15 @@ function saveState() {
 }
 
 const state = loadState();
+
+// Rename: stores that still have the old default name get the new one (anything the manager typed themselves is left alone).
+(function () {
+  const s = state.settings; let ch = false;
+  if (s.storeName === "Longleys Plumbing") { s.storeName = "Longley's Plumbing Supplies"; ch = true; }
+  if (s.legalName === "Longleys Plumbing") { s.legalName = "Longley's Plumbing Supplies"; ch = true; }
+  if (s.footer === "Thank you for shopping Longleys Plumbing") { s.footer = "Thank you for shopping Longley's Plumbing Supplies"; ch = true; }
+  if (ch) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshotState())); } catch (e) {} }
+})();
 state.users.forEach(upgradeUser);
 applyMeasureDefaults();
 saveState();

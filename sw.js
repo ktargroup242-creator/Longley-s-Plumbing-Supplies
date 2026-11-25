@@ -1,5 +1,5 @@
 // Keeps the POS working with no internet after the first visit.
-const CACHE = "longleys-pos-mobile-v4";
+const CACHE = "longleys-pos-mobile-v5";
 const FILES = ["./", "index.html", "styles.css", "mobile.css", "mobile-shim.js", "mobile.js", "mobile-vault.js", "mobile-fixes.js", "app.js",
   "accounting.js", "inventory-seed.js", "customers-seed.js", "manifest.webmanifest", "icon.png", "icon-192.png",
   "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"];

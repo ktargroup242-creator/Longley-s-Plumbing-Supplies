@@ -1,4 +1,4 @@
-LONGLEYS PLUMBING - ITEM NUMBER (SKU) GUIDE
+LONGLEY'S PLUMBING SUPPLIES - ITEM NUMBER (SKU) GUIDE
 ==========================================
 
 Every item number is a 3-letter category code, a dash, and a 4-digit number:

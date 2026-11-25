@@ -1,2 +1,2 @@
-// No imported customers for Longleys Plumbing.
+// No imported customers for Longley's Plumbing Supplies.
 window.SEED_CUSTOMERS = [];

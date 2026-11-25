@@ -1,7 +1,7 @@
 {
-  "name": "Longleys Plumbing POS",
-  "short_name": "Longleys POS",
-  "description": "Point of sale for Longleys Plumbing",
+  "name": "Longley's Plumbing Supplies POS",
+  "short_name": "Longley's POS",
+  "description": "Point of sale for Longley's Plumbing Supplies",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
