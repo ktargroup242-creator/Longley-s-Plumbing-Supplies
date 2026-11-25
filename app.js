@@ -537,16 +537,33 @@ function openModal(html) {
   els.modal.classList.remove("hidden");
 }
 
-function nextSku() {
+// Codes held ready for categories that have no items yet.
+const RESERVED_CODES = { "tubs": "TUB", "cpvc sch 80 fittings": "CP8", "pedestals & basins": "PED", "kitchen sinks": "KSK" };
+function nextSku(category) {
+  // New item numbers look like TUB-0001: a 3-letter category code, a dash, and a 4-digit running number.
+  const cat = String(category || "").trim().toLowerCase();
+  let prefix = "NEW";
+  if (cat) {
+    const counts = {};
+    state.products.forEach((x) => {
+      if (String(x.category || "").trim().toLowerCase() !== cat) return;
+      const m = /^([A-Z]{3})-\d+$/.exec(String(x.sku).trim());
+      if (m) counts[m[1]] = (counts[m[1]] || 0) + 1;
+    });
+    const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    if (best) prefix = best[0];
+    else if (RESERVED_CODES[cat]) prefix = RESERVED_CODES[cat];
+  }
   let max = 0;
-  state.products.forEach((x) => { const t = String(x.sku).trim(); if (/^\d+$/.test(t)) max = Math.max(max, Number(t)); });
-  return String(max + 1);
+  const re = new RegExp("^" + prefix + "-(\\d+)$");
+  state.products.forEach((x) => { const m = re.exec(String(x.sku).trim()); if (m) max = Math.max(max, Number(m[1])); });
+  return `${prefix}-${String(max + 1).padStart(4, "0")}`;
 }
 
 
 // ---- Items sold by measure (rope, pipe, wire, tubing...) ----
 function measuredSkus() {
-  return ["988", "1021", "1331", "1332", "1333", "1334", "1335", "1336", "3002", "1161", "2175", "2770", "3160", "3161", "3162", "3467", "3468", "3702", "3703", "3704", "1501", "1502", "3321", "3322", "1281", "2817", "3812", "1405", "2393", "2394", "2348", "2349", "193", "1171"];
+  return []; // items sold by the foot now carry their unit in the item list
 }
 function applyMeasureDefaults() {
   if (state.settings.measureV1) return;
@@ -604,12 +621,12 @@ function productForm(product) {
   openModal(`
     <h3>${product ? "Edit Item" : "New Item"}</h3>
     <form class="stack-form" id="productForm">
-      <label>SKU / item number${product ? "" : " (next number after your QuickBooks list; change it if you need to)"}<input name="sku" value="${esc(p.sku)}" ${product ? "readonly" : ""} required></label>
+      <label>SKU / item number${product ? "" : " (suggested from the category, e.g. TUB-0011; you can change it)"}<input name="sku" value="${esc(p.sku)}" ${product ? "readonly" : ""} required></label>
       <label>Barcode<input name="barcode" value="${esc(p.barcode)}"></label>
       <label>Alternate lookup codes (separate with |)<input name="alt" value="${esc(p.alt || "")}"></label>
       <label>Name<input name="name" value="${esc(p.name)}" required></label>
       <label>Description (searchable, printed on quotes)<input name="desc" value="${esc(p.desc || "")}"></label>
-      <label>Category (type a new one or pick an existing one)<input name="category" list="catList" value="${esc(p.category)}" placeholder="e.g. Hex Bolts" autocomplete="off" required></label>
+      <label>Category (type a new one or pick an existing one)<input name="category" list="catList" value="${esc(p.category)}" placeholder="e.g. Tubs" autocomplete="off" required></label>
       <datalist id="catList">${categories().filter((c) => c !== "All").sort((a, b) => a.localeCompare(b)).map((c) => `<option value="${esc(c)}"></option>`).join("")}</datalist>
       <label class="inline"><input name="track" type="checkbox" ${p.noTrack ? "" : "checked"}> Track stock for this item</label>
       <label>Sold by (leave blank for whole items. For rope, pipe, wire etc. pick ft, yd, m, lb or gal so she can sell 1.5)<input name="unit" list="unitList" value="${esc(p.unit || "")}" maxlength="8" placeholder="blank = each" autocomplete="off"></label>
@@ -632,6 +649,16 @@ function productForm(product) {
     audit("item deleted", `${p.sku} ${p.name}`);
     saveState(); closeModal(); renderCategories(); renderProducts(); renderInventory();
   };
+  if (!product) {
+    // New item: when a category is chosen, suggest the next number in that category's code (TUB-0011, etc.)
+    const f = document.getElementById("productForm");
+    const skuIn = f.elements.sku, catIn = f.elements.category;
+    let auto = skuIn.value, touched = false;
+    skuIn.addEventListener("input", () => { touched = skuIn.value !== auto; });
+    const suggest = () => { if (touched) return; auto = nextSku(catIn.value); skuIn.value = auto; };
+    catIn.addEventListener("input", suggest);
+    catIn.addEventListener("change", suggest);
+  }
   document.getElementById("productForm").onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
@@ -982,6 +1009,8 @@ function openPay() {
     alert("Add items before charging.");
     return;
   }
+  const noPrice = cart.items.filter((i) => !(Number(i.price) > 0));
+  if (noPrice.length && !confirm(`${noPrice.length} item(s) on this sale have no price ($0.00):\n\n${noPrice.map((i) => i.name).join("\n")}\n\nCancel and tap the price to set it, or OK to charge anyway.`)) return;
   openModal(`
     <h3>Take Payment</h3>
     <p>Amount due: <strong>$${money(t.total)}</strong> (includes 10% Bahamas VAT)</p>
@@ -2448,7 +2477,7 @@ document.getElementById("loadSeedBtn").onclick = () => {
   if (!isManager() || !seed.length) return;
   const have = new Set(state.products.map((p) => p.sku));
   const fresh = seed.filter((p) => !have.has(p.sku)).map((p) => ({ ...p, exempt: false }));
-  if (!confirm(`Add ${fresh.length} items from the QuickBooks item list? Items you already have (same SKU) are left alone.`)) return;
+  if (!confirm(`Add ${fresh.length} items from the Longleys item list? Items you already have (same SKU) are left alone.`)) return;
   let wipe = false;
   if (state.products.some((p) => !seed.some((x) => x.sku === p.sku)) && confirm("Also delete items that are not in this list (for example the sample items)?\nOK = delete them. Cancel = keep them.")) wipe = true;
   if (wipe) state.products = state.products.filter((p) => seed.some((x) => x.sku === p.sku));
@@ -2459,13 +2488,13 @@ document.getElementById("loadSeedBtn").onclick = () => {
 document.getElementById("resetItemsBtn").onclick = () => {
   const seed = window.SEED_PRODUCTS || [];
   if (!isManager() || !seed.length) return;
-  if (!confirm(`REPLACE ALL ITEMS with the original QuickBooks list (${seed.length} items)?\n\nThis deletes every item you have now, including items you added, price changes and current stock counts. Stock goes back to the QuickBooks numbers. Sales history, customers and staff are kept.\n\nA backup file downloads first.`)) return;
+  if (!confirm(`REPLACE ALL ITEMS with the Longleys item list (${seed.length} items)?\n\nThis deletes every item you have now, including items you added, price changes and current stock counts. Stock goes back to the list's starting numbers. Sales history, customers and staff are kept.\n\nA backup file downloads first.`)) return;
   if ((prompt('Type RESET to confirm:') || "").trim().toUpperCase() !== "RESET") return alert("Cancelled. Nothing was changed.");
   document.getElementById("exportBackupBtn").click();
   const before = state.products.length;
   state.products = seed.map((p) => ({ ...p, exempt: false }));
   cart.items = [];
-  audit("items replaced with QuickBooks list", `${before} items replaced by ${seed.length}`);
+  audit("items replaced with Longleys item list", `${before} items replaced by ${seed.length}`);
   saveState(); renderCategories(); renderProducts(); renderInventory(); renderCart();
   alert(`Done. ${seed.length} items loaded.`);
 };

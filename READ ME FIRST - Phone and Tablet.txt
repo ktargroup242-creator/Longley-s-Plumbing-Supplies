@@ -34,6 +34,10 @@ STEP 2 - INSTALL ON EACH DEVICE
 iPhone / iPad (use Safari):  open the address > Share button > "Add to Home Screen".
 Android (use Chrome):        open the address > menu (three dots) > "Install app" / "Add to Home screen"
                              (or Menu in the POS > "Install app on this device").
+  Can't install? Open the address in Chrome (not inside WhatsApp/Gmail), make sure it starts with https://,
+  then in the POS tap Menu > "Can't install? Tap here". It lists exactly what is blocking it.
+  The folder cannot be installed by opening index.html or the zip on the phone: it must be uploaded first
+  (GitHub Pages: put the files at the top level of the repo, address ends with /repo-name/).
 Open it from the new "Longleys POS" icon. After the first open it also works with no internet.
 Installing from the Home Screen matters on iPhone/iPad: Safari can clear data from sites that are
 only opened in a browser tab; an installed app is protected.
@@ -54,4 +58,34 @@ FILES
 -----
 index.html, app.js, accounting.js, *-seed.js   the POS itself (same code as the PC version)
 mobile.css, mobile.js, mobile-shim.js          the phone/tablet layer
+mobile-vault.js                                automatic backup folders + saved copies
+mobile-fixes.js                                "Can't install?" help
 manifest.webmanifest, sw.js, icon*.png         install + offline support
+
+NEW ITEM LIST
+-------------
+Same new list as the PC version: new categories (Pedestals & Basins, Kitchen Sinks, PVC Sch 80, Tools, Hardware, Electrical),
+copied from the Screws and Tools stock with nothing invented, and new item numbers like PED-0001 (see SKU GUIDE.txt; old numbers
+are in Item List Update/sku-crosswalk.csv). Tubs and CPVC Sch 80 have no items in the source list; add the first one with
+Inventory > New Item. A phone that already has the old list: Menu > Inventory > "Replace all with Longleys item list" (type RESET;
+sales and customers are kept). Open the app twice after updating so the new files load.
+
+AUTOMATIC BACKUP FOLDERS (no setup)
+-----------------------------------
+Phones and tablets do not let a web app pick a folder, so the POS makes its own two folders inside the app the first time
+it opens, with no questions asked:
+    Longleys-POS-Data     the current data, saved a moment after every change
+    Longleys-POS-Backup   one copy per day, the last 30 days kept
+If the phone ever wipes the app's normal storage, the next time you open the POS it puts your data back from these folders by itself.
+Menu > "Auto-saved copies on this device" lists the daily copies and lets you put an older day back.
+These folders live inside the app, so they are NOT visible in the Files app, and they go if you delete the app or "clear site data".
+For a copy that survives that, use Menu > "Save a copy to Files / Drive" (opens the share sheet: Drive, Files, WhatsApp, email).
+Do that at least once a week, and keep the file somewhere other than the phone.
+
+GITHUB PAGES NOTES
+------------------
+* Put the CONTENTS of the Longleys-POS-Mobile folder in the repository (root, or a /docs folder) and turn on Pages for it.
+* A free GitHub Pages site is public, and item costs are inside the item list file (inventory-seed.js). If you do not want
+  costs public, use a private repository (Pages from private repos needs a paid plan), or host it on Cloudflare Pages / Netlify with a password.
+  Sales and customers are never in the repository; they stay on each device.
+* Sales and backups belong to the address (for example yourname.github.io). Open the POS from the same address every time.

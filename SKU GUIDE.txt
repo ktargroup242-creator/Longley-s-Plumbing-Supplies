@@ -1,0 +1,80 @@
+LONGLEYS PLUMBING - ITEM NUMBER (SKU) GUIDE
+==========================================
+
+Every item number is a 3-letter category code, a dash, and a 4-digit number:
+
+    PED-0001      PV8-0012      ELT-0007      TLP-0003
+
+The old QuickBooks numbers are no longer used. To look up an old number, open
+"Item List Update\sku-crosswalk.csv" (old number -> new number).
+
+NEW ITEMS
+  Inventory > New Item. Choose the category first and the POS suggests the next number
+  in that category (for example TUB-0001 for your first tub). A brand-new category starts at
+  NEW-0001; give it a 3-letter code of your own and keep to it.
+
+CODE   CATEGORY                                  ITEMS
+AGV   Angle Valves                               3
+APP   Appliance Parts                            5
+BVL   Ball Valves                                6
+BBF   Barbed Fittings                            5
+BFC   Basin Faucets                              3
+BSN   Basin Supplies                             6
+BLK   Black Iron Fittings                        4
+BCF   Brass Compression Fittings                11
+BRF   Brass Fittings                            19
+CHK   Check Valves                               2
+CPR   Copper Fittings                            1
+CPV   CPVC Fittings                             40
+DWV   DWV Fittings                              73
+ELA   Electrical - Accessories & Testers        10
+ELC   Electrical - Conduit & Fittings           11
+ELT   Electrical - Connectors & Terminals       26
+ELD   Electrical - Devices & Plates             16
+ELL   Electrical - Lighting                      6
+ELW   Electrical - Wire, Tape & Ties            25
+WSH   Faucet Washerless Parts                    2
+FTV   Foot Valves                                1
+GLV   Galvanized Fittings                       88
+GAS   Gas Fittings                              15
+HDW   Hardware                                  16
+HDA   Hardware - Anchors & Fixings              47
+HDL   Hardware - Locks & Padlocks               13
+HTR   Heaters & Water Heating                    8
+HBB   Hose Bibbs & Gate Valves                   3
+HCL   Hose Clamps                               16
+HSF   Hose Fittings                              7
+KFC   Kitchen Faucets                            4
+KSK   Kitchen Sinks                              1
+ORG   O-Rings                                   11
+PED   Pedestals & Basins                         1
+PLF   Plumbing Fittings                         80
+PLS   Plumbing Supplies                         18
+PTF   Pump & Tank Fittings                       6
+PMP   Pumps & Wells                              4
+PVP   PVC Pipe                                  10
+PV8   PVC Sch 80 Fittings                       32
+SEA   Sealants & Compounds                      16
+SHD   Shower Drains                              1
+SNK   Sink Supplies                             26
+SLV   Solvents & Cement                         22
+SSF   Stainless Steel Fittings                  24
+HNG   Straps & Hangers                           6
+SPT   Supply Tubes                              18
+TOI   Toilet Supplies                           34
+TLH   Tools - Hand Tools                       135
+TLP   Tools - Plumbing                          24
+TFR   Tub & Faucet Repair Parts                  3
+TST   Tub Stems                                 26
+TBS   Tub Supplies                              23
+TBG   Tubing                                     2
+TUP   Tubular Parts                              8
+UNI   Unions                                     2
+WCL   Water Closets                              1
+WFL   Water Filters                              4
+WTF   Water Tank Fittings                        4
+WTK   Water Tanks                                1
+
+CODES HELD READY FOR CATEGORIES WITH NO ITEMS YET
+TUB  Tubs
+CP8  CPVC Sch 80 Fittings
